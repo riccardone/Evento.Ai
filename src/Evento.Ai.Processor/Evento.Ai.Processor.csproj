@@ -6,4 +6,13 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Adapter\Mappers\" />
+    <Folder Include="Domain\Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Evento" Version="5.1.0" />
+  </ItemGroup>
+
 </Project>
