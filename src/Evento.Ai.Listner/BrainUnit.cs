@@ -4,7 +4,6 @@ using System.Text.Json.Nodes;
 using Evento.Ai.Contracts;
 using Evento.Ai.Listner.Neurons;
 using NLog;
-using Remundo.AI.Contracts;
 
 [assembly: InternalsVisibleTo("Evento.AI.Tests")]
 namespace Evento.Ai.Listner;

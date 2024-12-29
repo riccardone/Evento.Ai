@@ -7,9 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
-using Remundo.AI.Contracts;
 
-namespace Evento.Ai;
+namespace Evento.Ai.Host;
 
 internal class Program
 {
@@ -38,7 +37,7 @@ internal class Program
         if (args.Length > 0) hostName = args[0];
         IConfiguration configuration = BuildConfig();
 
-        return Host.CreateDefaultBuilder(args)
+        return Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args)
             .ConfigureLogging(logging =>
             {
                 logging.ClearProviders();
