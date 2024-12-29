@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Evento.Ai": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}
