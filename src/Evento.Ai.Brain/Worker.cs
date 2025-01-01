@@ -1,4 +1,5 @@
 ﻿using Evento.Ai.Contracts;
+using Evento.Ai.Listner;
 using Microsoft.Extensions.Hosting;
 using NLog;
 
@@ -12,16 +13,14 @@ namespace Evento.Ai.Brain;
 public class Worker : IHostedService
 {
     private readonly ILogger _logger;
-    private readonly IBrainUnit<dynamic> _negotiatorBrainUnit;
-    private readonly IBrainUnit<dynamic> _baasBrainUnit;
+    private readonly IBrainUnit<BrainUnit> _brainUnit;
     public bool IsServiceRunning { get; private set; }
     public string? ErrorMessage { get; private set; }
     
-    public Worker(ILogger logger, IBrainUnit<dynamic> negotiatorBrainUnit, IBrainUnit<dynamic> baasBrainUnit)
+    public Worker(ILogger logger, IBrainUnit<BrainUnit> brainUnit)
     {
         _logger = logger;
-        _negotiatorBrainUnit = negotiatorBrainUnit;
-        _baasBrainUnit = baasBrainUnit;
+        _brainUnit = brainUnit;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -41,7 +40,7 @@ public class Worker : IHostedService
         _logger.Info("Start configuring the brain...");
         try
         {
-            await Task.WhenAll(_negotiatorBrainUnit.StartAsync(), _baasBrainUnit.StartAsync());
+            await Task.WhenAll(_brainUnit.StartAsync());
             IsServiceRunning = true;
             ErrorMessage = string.Empty;
         }

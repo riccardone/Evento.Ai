@@ -1,4 +1,5 @@
-﻿using Evento.Ai.Brain;
+﻿using Azure.Messaging.ServiceBus;
+using Evento.Ai.Brain;
 using Evento.Ai.Contracts;
 using Evento.Ai.Listner;
 using Microsoft.Extensions.Configuration;
@@ -67,6 +68,15 @@ internal class Program
                 services.AddSingleton<IHostedService>(p => p.GetRequiredService<Worker>());
                 services.AddSingleton(configuration);
                 services.AddSingleton<IBrainUnit<BrainUnit>, BrainUnit>();
+                var sbClient = new ServiceBusClient(settings.ServiceBusConnectionString);
+                var processor = sbClient.CreateSessionProcessor(settings.QueueName, new ServiceBusSessionProcessorOptions()
+                {
+                    AutoCompleteMessages = false,
+                    MaxConcurrentSessions = 32,
+                    PrefetchCount = 32
+                });
+                services.AddSingleton(processor);
+                services.AddHostedService(e => e.GetRequiredService<Application>());
                 //services.AddSingleton<IHttpService, HttpService>();
 #if !DEBUG
                 services.AddCustomTinyHealthCheck<CustomHealthCheck>(config =>

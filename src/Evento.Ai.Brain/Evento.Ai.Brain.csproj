@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Evento.Ai.Contracts\Evento.Ai.Contracts.csproj" />
+    <ProjectReference Include="..\Evento.Ai.Listner\Evento.Ai.Listner.csproj" />
   </ItemGroup>
 
 </Project>

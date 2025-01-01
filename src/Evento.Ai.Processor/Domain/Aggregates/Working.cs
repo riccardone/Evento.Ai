@@ -30,4 +30,9 @@ public class Working : AggregateBase
 
         RaiseEvent(new BehaviourRequestedV1(command.Area, command.Tag, command.Title, command.Description, command.AcceptanceCriterias, command.Metadata));
     }
+
+    public static Working Create()
+    {
+        return new Working();
+    }
 }
