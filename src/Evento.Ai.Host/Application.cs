@@ -2,11 +2,10 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using CloudEventData;
-using Evento.Ai.Contracts;
+using Evento.Ai.Processor;
 using Evento.Ai.Processor.Adapter;
 using Evento.Repository;
 using EventStore.ClientAPI;
-using EventStore.ClientAPI.SystemData;
 using Microsoft.Extensions.Hosting;
 using NLog;
 
@@ -15,6 +14,7 @@ namespace Evento.Ai.Host;
 public class Application : IHostedService
 {
     private readonly Settings _settings;
+    private readonly IConnectionBuilder _connectionBuilder;
     private readonly ServiceBusSessionProcessor _processor;
     private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
     private IEventStoreConnection _connection;
@@ -22,12 +22,13 @@ public class Application : IHostedService
     private Worker _worker;
     public bool _started;
 
-    public Application(ServiceBusSessionProcessor processor, Settings settings)
+    public Application(ServiceBusSessionProcessor processor, Settings settings, IConnectionBuilder connectionBuilder)
     {
         _processor = processor;
         _processor.ProcessMessageAsync += ProcessMessageAsync;
         _processor.ProcessErrorAsync += ProcessErrorAsync;
         _settings = settings;
+        _connectionBuilder = connectionBuilder;
     }
 
     public async Task StartAsync(CancellationToken token)
@@ -51,7 +52,7 @@ public class Application : IHostedService
         try
         {
             _logger.Debug("Triggered...");
-            _connection = Build();
+            _connection = _connectionBuilder.Build();
             var text = Encoding.UTF8.GetString(args.Message.Body);
             var cloudRequest = JsonSerializer.Deserialize<CloudEventRequest>(text); // TODO test this
             _domainRepository = new EventStoreDomainRepository(_settings.EventCategory, _connection);
@@ -80,27 +81,5 @@ public class Application : IHostedService
         {
             _connection.Close();
         }
-    }
-
-    private IEventStoreConnection Build(bool openConnection = true)
-    {
-        //var conn = EventStoreConnection.Create(BuildConnectionSettings(new UserCredentials("...", "...")), "", "");
-        //conn.Disconnected += Conn_Disconnected;
-        //conn.Reconnecting += Conn_Reconnecting;
-        //conn.Connected += Conn_Connected;
-        //conn.Closed += Conn_Closed;
-        //if (openConnection)
-        //    conn.ConnectAsync().Wait();
-
-        //return conn;
-        throw new NotImplementedException();
-    }
-
-    private static ConnectionSettings BuildConnectionSettings(UserCredentials userCredentials)
-    {
-        var connectionSettingsBuilder = ConnectionSettings.Create()
-            .SetDefaultUserCredentials(userCredentials);
-        //.KeepReconnecting().KeepRetrying();
-        return connectionSettingsBuilder.Build();
     }
 }

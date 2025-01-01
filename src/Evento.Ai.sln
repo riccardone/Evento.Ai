@@ -3,15 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Ai.Contracts", "Evento.Ai.Contracts\Evento.Ai.Contracts.csproj", "{2F1AE388-35B9-4021-9014-2C861B8AD449}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Ai.Brain", "Evento.Ai.Brain\Evento.Ai.Brain.csproj", "{7F627A20-C723-47B2-B026-E9CA3EFFCD9C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Ai.Listner", "Evento.Ai.Listner\Evento.Ai.Listner.csproj", "{BCA63787-D4DE-4615-884D-07A6EEF6BA99}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Ai.Processor", "Evento.Ai.Processor\Evento.Ai.Processor.csproj", "{70F0D924-638A-4079-9719-9863168B4BA5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Ai.Host", "Evento.Ai.Host\Evento.Ai.Host.csproj", "{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Queuesto", "Queuesto\Queuesto.csproj", "{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,18 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2F1AE388-35B9-4021-9014-2C861B8AD449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F1AE388-35B9-4021-9014-2C861B8AD449}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F1AE388-35B9-4021-9014-2C861B8AD449}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F1AE388-35B9-4021-9014-2C861B8AD449}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F627A20-C723-47B2-B026-E9CA3EFFCD9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F627A20-C723-47B2-B026-E9CA3EFFCD9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F627A20-C723-47B2-B026-E9CA3EFFCD9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F627A20-C723-47B2-B026-E9CA3EFFCD9C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BCA63787-D4DE-4615-884D-07A6EEF6BA99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BCA63787-D4DE-4615-884D-07A6EEF6BA99}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BCA63787-D4DE-4615-884D-07A6EEF6BA99}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BCA63787-D4DE-4615-884D-07A6EEF6BA99}.Release|Any CPU.Build.0 = Release|Any CPU
 		{70F0D924-638A-4079-9719-9863168B4BA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{70F0D924-638A-4079-9719-9863168B4BA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70F0D924-638A-4079-9719-9863168B4BA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +23,10 @@ Global
 		{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

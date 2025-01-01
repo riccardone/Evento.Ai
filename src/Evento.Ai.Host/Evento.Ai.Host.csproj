@@ -22,9 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Evento.Ai.Brain\Evento.Ai.Brain.csproj" />
-    <ProjectReference Include="..\Evento.Ai.Contracts\Evento.Ai.Contracts.csproj" />
-    <ProjectReference Include="..\Evento.Ai.Listner\Evento.Ai.Listner.csproj" />
     <ProjectReference Include="..\Evento.Ai.Processor\Evento.Ai.Processor.csproj" />
   </ItemGroup>
 

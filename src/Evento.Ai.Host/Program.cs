@@ -1,7 +1,7 @@
 ﻿using Azure.Messaging.ServiceBus;
-using Evento.Ai.Brain;
-using Evento.Ai.Contracts;
-using Evento.Ai.Listner;
+using Evento.Ai.Processor;
+using Evento.Ai.Processor.Adapter;
+using EventStore.ClientAPI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,9 +65,7 @@ internal class Program
                 }); services.AddSingleton(settings);
 
                 services.AddSingleton<Worker>();
-                services.AddSingleton<IHostedService>(p => p.GetRequiredService<Worker>());
                 services.AddSingleton(configuration);
-                services.AddSingleton<IBrainUnit<BrainUnit>, BrainUnit>();
                 var sbClient = new ServiceBusClient(settings.ServiceBusConnectionString);
                 var processor = sbClient.CreateSessionProcessor(settings.QueueName, new ServiceBusSessionProcessorOptions()
                 {
@@ -75,6 +73,9 @@ internal class Program
                     MaxConcurrentSessions = 32,
                     PrefetchCount = 32
                 });
+                services.AddSingleton<IConnectionBuilder>(
+                    _ => BuilderForDomain($"{settings.CloudRequestSource}-conn", settings,
+                        ConnectionBuilder.BuildConnectionSettings(settings), logger));
                 services.AddSingleton(processor);
                 services.AddHostedService(e => e.GetRequiredService<Application>());
                 //services.AddSingleton<IHttpService, HttpService>();
@@ -98,5 +99,13 @@ internal class Program
             .AddJsonFile($"appsettings.{env}.json", optional: true, reloadOnChange: false)
             .AddEnvironmentVariables();
         return builder.Build();
+    }
+
+    private static IConnectionBuilder BuilderForDomain(string connectionName, Settings settings,
+        ConnectionSettings connSettings, NLog.ILogger logger)
+    {
+        var builderForDomain = new ConnectionBuilder(new Uri(settings.EventStoreConnectionString), connSettings,
+            connectionName, logger);
+        return builderForDomain;
     }
 }

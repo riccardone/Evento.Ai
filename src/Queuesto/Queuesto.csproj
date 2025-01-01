@@ -6,12 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NLog" Version="5.3.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Evento.Ai.Contracts\Evento.Ai.Contracts.csproj" />
-  </ItemGroup>
-
 </Project>
