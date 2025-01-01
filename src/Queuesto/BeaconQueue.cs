@@ -1,22 +1,28 @@
 ﻿using System.Collections.Concurrent;
+using System.Text.Json;
+using NLog;
 
 namespace Queuesto;
 
 public class BeaconQueue<T>
 {
+    private static readonly ILogger Logger = LogManager.GetCurrentClassLogger();
+
     private readonly string _queueDirectory;
     private readonly string _deadLetterDirectory;
-    private readonly ConcurrentQueue<T> _queue = new();
+    private readonly ConcurrentQueue<MessageWrapper<T>> _queue = new();
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly int _maxRetryAttempts;
-    private readonly Action<T, int> _messageProcessor;
+    private readonly Action<MessageWrapper<T>, int> _messageProcessor;
+    private readonly int _baseDelay;
 
-    public BeaconQueue(string queueName, int maxRetryAttempts, Action<T, int> messageProcessor)
+    public BeaconQueue(string queueName, int maxRetryAttempts, Action<MessageWrapper<T>, int> messageProcessor, int baseDelay = 100)
     {
         _queueDirectory = queueName;
         _deadLetterDirectory = $"{queueName}-deadletter";
         _maxRetryAttempts = maxRetryAttempts;
         _messageProcessor = messageProcessor;
+        _baseDelay = baseDelay;
 
         Directory.CreateDirectory(_queueDirectory);
         Directory.CreateDirectory(_deadLetterDirectory);
@@ -27,39 +33,72 @@ public class BeaconQueue<T>
 
     private void LoadQueueFromDisk()
     {
-        foreach (var file in Directory.GetFiles(_queueDirectory))
+        try
         {
-            var content = File.ReadAllText(file);
-            var message = DeserializeMessage(content);
-            _queue.Enqueue(message);
+            foreach (var file in Directory.GetFiles(_queueDirectory))
+            {
+                var content = File.ReadAllText(file);
+                var message = DeserializeMessage(content);
+                _queue.Enqueue(message);
+            }
+
+            Logger.Info($"Loaded {Directory.GetFiles(_queueDirectory).Length} messages from disk.");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to load queue from disk.");
         }
     }
 
-    private void SaveMessageToDisk(T message)
+    private void SaveMessageToDisk(MessageWrapper<T> message)
     {
-        var filePath = Path.Combine(_queueDirectory, Guid.NewGuid() + ".msg");
-        File.WriteAllText(filePath, SerializeMessage(message));
+        try
+        {
+            var filePath = Path.Combine(_queueDirectory, Guid.NewGuid() + ".msg");
+            File.WriteAllText(filePath, SerializeMessage(message));
+            Logger.Debug($"Message saved to disk: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to save message to disk.");
+        }
     }
 
-    private void MoveToDeadLetterQueue(T message)
+    private void MoveToDeadLetterQueue(MessageWrapper<T> message)
     {
-        var filePath = Path.Combine(_deadLetterDirectory, Guid.NewGuid() + ".msg");
-        File.WriteAllText(filePath, SerializeMessage(message));
+        try
+        {
+            var filePath = Path.Combine(_deadLetterDirectory, Guid.NewGuid() + ".msg");
+            File.WriteAllText(filePath, SerializeMessage(message));
+            Logger.Warn($"Message moved to dead letter queue: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to move message to dead letter queue.");
+        }
     }
 
-    private string SerializeMessage(T message) => System.Text.Json.JsonSerializer.Serialize(message);
+    private string SerializeMessage(MessageWrapper<T> message) => JsonSerializer.Serialize(message);
 
-    private T DeserializeMessage(string content) => System.Text.Json.JsonSerializer.Deserialize<T>(content);
+    private MessageWrapper<T> DeserializeMessage(string content) => JsonSerializer.Deserialize<MessageWrapper<T>>(content);
 
-    public void Enqueue(T message)
+    public void Enqueue(MessageWrapper<T> message)
     {
-        _queue.Enqueue(message);
-        SaveMessageToDisk(message);
+        try
+        {
+            _queue.Enqueue(message);
+            SaveMessageToDisk(message);
+            Logger.Info($"Message enqueued: {message.Id}");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error(ex, "Failed to enqueue message.");
+        }
     }
 
     private void StartProcessingQueue()
     {
-        Task.Run(() =>
+        Task.Run(async () =>
         {
             while (!_cancellationTokenSource.Token.IsCancellationRequested)
             {
@@ -69,13 +108,32 @@ public class BeaconQueue<T>
                 }
                 else
                 {
-                    Thread.Sleep(100); // Avoid busy-waiting
+                    int waitTime = CalculateAdaptiveDelay();
+                    await Task.Delay(waitTime, _cancellationTokenSource.Token);
                 }
             }
         }, _cancellationTokenSource.Token);
     }
 
-    private void ProcessMessage(T message)
+    private int CalculateAdaptiveDelay()
+    {
+        int queueSize = _queue.Count;
+
+        if (queueSize > 100)
+        {
+            return _baseDelay / 10; // High traffic, shorter delay
+        }
+        else if (queueSize > 0)
+        {
+            return _baseDelay / 2; // Moderate traffic
+        }
+        else
+        {
+            return _baseDelay; // Low traffic, standard delay
+        }
+    }
+
+    private void ProcessMessage(MessageWrapper<T> message)
     {
         var attempts = 0;
         while (attempts < _maxRetryAttempts)
@@ -83,14 +141,18 @@ public class BeaconQueue<T>
             try
             {
                 _messageProcessor(message, attempts + 1);
-                return; // Processing succeeded
+                Logger.Info($"Message processed successfully: {message.Id}");
+                return;
             }
-            catch
+            catch (Exception ex)
             {
                 attempts++;
+                Logger.Warn(ex, $"Processing failed for message: {message.Id}, Attempt: {attempts}");
+
                 if (attempts >= _maxRetryAttempts)
                 {
                     MoveToDeadLetterQueue(message);
+                    Logger.Error($"Message moved to dead letter queue after {attempts} attempts: {message.Id}");
                 }
             }
         }
@@ -98,6 +160,7 @@ public class BeaconQueue<T>
 
     public void Stop()
     {
+        Logger.Info("Stopping the queue service...");
         _cancellationTokenSource.Cancel();
     }
 
@@ -109,21 +172,18 @@ public class BeaconQueue<T>
         {
             try
             {
-                // Read the message from the dead-letter queue file
                 var content = File.ReadAllText(file);
                 var message = DeserializeMessage(content);
 
-                // Enqueue the message back into the main queue
                 Enqueue(message);
 
-                // Delete the file from the dead-letter directory
                 File.Delete(file);
 
-                Console.WriteLine($"Retried message: {content}");
+                Logger.Info($"Retried message from dead letter queue: {file}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to retry message from {file}: {ex.Message}");
+                Logger.Error(ex, $"Failed to retry message from dead letter queue file: {file}");
             }
         }
     }
