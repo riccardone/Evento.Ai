@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Ai.Processor", "Even
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Evento.Ai.Host", "Evento.Ai.Host\Evento.Ai.Host.csproj", "{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Queuesto", "Queuesto\Queuesto.csproj", "{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B76AFB6A-B6BF-41AB-A085-C66A0DE5C623}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6147CDB0-D4B0-4B37-BA8A-E0EE5C3C5F01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
