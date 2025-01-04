@@ -4,6 +4,7 @@ using Azure.Messaging.ServiceBus;
 using CloudEventData;
 using Evento.Ai.Processor;
 using Evento.Ai.Processor.Adapter;
+using Evento.Ai.Processor.Domain.Services;
 using Evento.Repository;
 using EventStore.ClientAPI;
 using Microsoft.Extensions.Hosting;
@@ -56,8 +57,9 @@ public class Application : IHostedService
             var text = Encoding.UTF8.GetString(args.Message.Body);
             var cloudRequest = JsonSerializer.Deserialize<CloudEventRequest>(text); // TODO test this
             _domainRepository = new EventStoreDomainRepository(_settings.EventCategory, _connection);
-
-            _worker = new Worker(_domainRepository, _logger);
+            IDataReader reader = null;
+            IChatter chatter = null;
+            _worker = new Worker(_domainRepository, reader, chatter, _logger);
             _worker.Process(cloudRequest);
 
             await args.CompleteMessageAsync(args.Message);

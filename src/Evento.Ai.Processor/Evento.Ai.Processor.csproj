@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Domain\Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CloudEventRequest" Version="1.0.0" />
     <PackageReference Include="Evento" Version="5.1.0" />
     <PackageReference Include="NLog" Version="5.3.4" />

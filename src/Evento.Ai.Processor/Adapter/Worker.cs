@@ -2,6 +2,7 @@
 using System.Text;
 using CloudEventData;
 using Evento.Ai.Processor.Domain.Commands;
+using Evento.Ai.Processor.Domain.Services;
 using NLog;
 
 namespace Evento.Ai.Processor.Adapter;
@@ -10,14 +11,17 @@ public class Worker :
     IHandle<RequestBehaviour>
 {
     private readonly IDomainRepository _domainRepository;
+    private readonly IDataReader _dataReader;
+    private readonly IChatter _chatter;
     private readonly ILogger _logger;
 
     private readonly Dictionary<string, Func<CloudEventRequest, Command>> _deserializers = CreateDeserializersMapping();
 
-    public Worker(IDomainRepository domainRepository,
-        ILogger logger)
+    public Worker(IDomainRepository domainRepository, IDataReader dataReader, IChatter chatter, ILogger logger)
     {
         _domainRepository = domainRepository;
+        _dataReader = dataReader;
+        _chatter = chatter;
         _logger = logger;
     }
 
@@ -151,7 +155,7 @@ public class Worker :
             aggregate = Domain.Aggregates.Working.Create();
         }
 
-        aggregate.RequestBehaviour(command);
+        aggregate.RequestBehaviour(command, _dataReader, _chatter);
 
         return aggregate;
     }
