@@ -51,7 +51,7 @@ public class Working : AggregateBase
     {
         return new Dictionary<string, Neuron>
         {
-            {"ValidationSchema", new ValidationSchema()}
+            {"ValidationSchema", new ValidationSchemaGenerator()}
         };
     }
 }

@@ -57,8 +57,8 @@ public class Application : IHostedService
             var text = Encoding.UTF8.GetString(args.Message.Body);
             var cloudRequest = JsonSerializer.Deserialize<CloudEventRequest>(text); // TODO test this
             _domainRepository = new EventStoreDomainRepository(_settings.EventCategory, _connection);
-            IDataReader reader = null;
-            IChatter chatter = null;
+            var reader = new InMemoryDataReader();
+            var chatter = new InMemoryChatter();
             _worker = new Worker(_domainRepository, reader, chatter, _logger);
             _worker.Process(cloudRequest);
 
