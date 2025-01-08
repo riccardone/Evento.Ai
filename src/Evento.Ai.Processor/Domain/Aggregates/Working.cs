@@ -29,7 +29,7 @@ public class Working : AggregateBase
 
         if (_behaviour != null) return;
 
-        var schema = chatter.DiscoverSchema(new Behaviour(command.Area, command.Tag, command.Title, command.Description, command.AcceptanceCriterias));
+        var schema = chatter.DiscoverSchema(command.AcceptanceCriterias);
 
         RaiseEvent(new BehaviourRequestedV1(command.Area, command.Tag, command.Title, command.Description, command.AcceptanceCriterias, command.Metadata));
     }

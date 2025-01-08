@@ -5,7 +5,7 @@ namespace Evento.Ai.Tests.Fakes;
 
 public class FakeChatter : IChatter
 {
-    public Schema DiscoverSchema(Behaviour behaviour)
+    public Schema DiscoverSchema(string data)
     {
         throw new NotImplementedException();
     }

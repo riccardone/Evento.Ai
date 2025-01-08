@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Evento.Ai.Chatter\Evento.Ai.Chatter.csproj" />
     <ProjectReference Include="..\Evento.Ai.Processor\Evento.Ai.Processor.csproj" />
   </ItemGroup>
 

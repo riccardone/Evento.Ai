@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using CloudEventData;
+using Evento.Ai.Chatter;
 using Evento.Ai.Processor;
 using Evento.Ai.Processor.Adapter;
 using Evento.Ai.Processor.Domain.Services;
@@ -58,7 +59,7 @@ public class Application : IHostedService
             var cloudRequest = JsonSerializer.Deserialize<CloudEventRequest>(text); // TODO test this
             _domainRepository = new EventStoreDomainRepository(_settings.EventCategory, _connection);
             var reader = new InMemoryDataReader();
-            var chatter = new InMemoryChatter();
+            var chatter = new OpenAiChatter();
             _worker = new Worker(_domainRepository, reader, chatter, _logger);
             _worker.Process(cloudRequest);
 

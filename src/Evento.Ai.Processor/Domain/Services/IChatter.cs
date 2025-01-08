@@ -4,5 +4,5 @@ namespace Evento.Ai.Processor.Domain.Services;
 
 public interface IChatter
 {
-    Schema DiscoverSchema(Behaviour behaviour);
+    Schema DiscoverSchema(string data);
 }
