@@ -10,10 +10,19 @@ public class Working : AggregateBase
     public override string AggregateId => _correlationId ?? "undefined";
     private string? _correlationId;
     private Behaviour? _behaviour;
+    private readonly IDictionary<string, Schema> _validationSchemas = new Dictionary<string, Schema>();
 
     public Working()
     {
         RegisterTransition<BehaviourRequestedV1>(Apply);
+        RegisterTransition<ValidationSchemaGeneratedV1>(Apply);
+    }
+
+    private void Apply(ValidationSchemaGeneratedV1 evt)
+    {
+        _correlationId = evt.Metadata["$correlationId"];
+        _validationSchemas[evt.Name] = new Schema(evt.Name, evt.ContentType, evt.Content,
+            DateTime.Parse(evt.Metadata["$applies"]), evt.Provider);
     }
 
     private void Apply(BehaviourRequestedV1 evt)
@@ -26,12 +35,14 @@ public class Working : AggregateBase
     {
         Ensure.NotNull(command, nameof(command));
         Ensure.NotNull(command.CorrelationId, nameof(command.CorrelationId));
+        Ensure.NotNull(reader, nameof(reader));
+        Ensure.NotNull(chatter, nameof(chatter));
 
-        if (_behaviour != null) return;
-
-        var schema = chatter.DiscoverSchema(command.AcceptanceCriterias);
-
-        RaiseEvent(new BehaviourRequestedV1(command.Area, command.Tag, command.Title, command.Description, command.AcceptanceCriterias, command.Metadata));
+        var schema = chatter.DiscoverSchema(command.Description);
+        if (!_validationSchemas.ContainsKey(schema.Id))
+            RaiseEvent(new ValidationSchemaGeneratedV1(schema.Id, schema.ContentType, schema.Data, nameof(chatter), command.Metadata));
+        if (_behaviour == null)
+            RaiseEvent(new BehaviourRequestedV1(command.Area, command.Tag, command.Title, command.Description, command.AcceptanceCriterias, command.Metadata));
     }
 
     public static Working Create()
