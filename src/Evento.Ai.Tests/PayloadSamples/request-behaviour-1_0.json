@@ -4,10 +4,10 @@
   "dataSchema": "request-behaviour/1.0",
   "data": {
     "CorrelationId": "1867ed71-5bb4-479a-aa78-04a4cd9d10ac",
-    "Area": "test",
-    "Tag": "test",
-    "Title": "test title",
-    "Description": "test test",
+    "Area": "Invitations",
+    "Tag": "first-iteration",
+    "Title": "Send an Invitation",
+    "Description": "As a company admin I want to invite a colleague to signup on the platform So I can assign tasks",
     "AcceptanceCriterias": "another test"
   },
   "id": "793b9470-0f85-4328-a655-b669b26514e7",

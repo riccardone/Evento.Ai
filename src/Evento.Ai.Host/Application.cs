@@ -10,6 +10,7 @@ using Evento.Repository;
 using EventStore.ClientAPI;
 using Microsoft.Extensions.Hosting;
 using NLog;
+using OpenAI;
 
 namespace Evento.Ai.Host;
 
@@ -59,7 +60,8 @@ public class Application : IHostedService
             var cloudRequest = JsonSerializer.Deserialize<CloudEventRequest>(text); // TODO test this
             _domainRepository = new EventStoreDomainRepository(_settings.EventCategory, _connection);
             var reader = new InMemoryDataReader();
-            var chatter = new OpenAiChatter();
+            var openAiClient = new OpenAIClient(new OpenAIAuthentication(_settings.OpenAIApiKey, _settings.OpenAIOrganization));
+            var chatter = new OpenAiChatter(openAiClient);
             _worker = new Worker(_domainRepository, reader, chatter, _logger);
             _worker.Process(cloudRequest);
 

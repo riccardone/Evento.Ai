@@ -5,8 +5,8 @@ namespace Evento.Ai.Tests.Fakes;
 
 public class FakeChatter : IChatter
 {
-    public Schema DiscoverSchema(string data)
+    public dynamic DiscoverSchema(string data)
     {
-        throw new NotImplementedException();
+        return new Schema(Guid.NewGuid().ToString(), "text/json", "{name:'test'}", DateTime.UtcNow, "OpenAi");
     }
 }

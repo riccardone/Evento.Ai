@@ -1,17 +1,30 @@
-﻿using Evento.Ai.Processor.Domain.Aggregates.Entities;
-using Evento.Ai.Processor.Domain.Services;
+﻿using Evento.Ai.Processor.Domain.Services;
+using OpenAI;
 using OpenAI.Chat;
 using OpenAI.Models;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Evento.Ai.Chatter;
 
 public class OpenAiChatter : IChatter
 {
-    private readonly Model _model = Model.GPT4;
+    private readonly OpenAIClient _openAiClient;
+    private readonly JsonSerializerOptions _jsonOptions;
+    private readonly Model _model;
 
-    public Schema DiscoverSchema(string data)
+    public OpenAiChatter(OpenAIClient openAiClient)
+    {
+        _openAiClient = openAiClient;
+        _model = Model.GPT4;
+        _jsonOptions = new JsonSerializerOptions();
+        _jsonOptions.Converters.Add(new JsonStringEnumConverter());
+    }
+
+    public dynamic DiscoverSchema(string data)
     {
         var chatRequest = new ChatRequest(ModelTrainer.DiscoverInfoAboutValidationSchema(data), _model);
-        return new Schema(Guid.NewGuid().ToString(), "text/json", "{name:'test'}", DateTime.UtcNow, "OpenAi");
+        var result = _openAiClient.ChatEndpoint.GetCompletionAsync(chatRequest).Result;
+        return JsonSerializer.Deserialize<dynamic>(result.ToString(), _jsonOptions);
     }
 }
