@@ -21,10 +21,17 @@ public class OpenAiChatter : IChatter
         _jsonOptions.Converters.Add(new JsonStringEnumConverter());
     }
 
-    public dynamic DiscoverSchema(string data)
+    public JsonDocument DiscoverSchema(string data)
     {
         var chatRequest = new ChatRequest(ModelTrainer.DiscoverInfoAboutValidationSchema(data), _model);
         var result = _openAiClient.ChatEndpoint.GetCompletionAsync(chatRequest).Result;
-        return JsonSerializer.Deserialize<dynamic>(result.ToString(), _jsonOptions);
+        return JsonSerializer.Deserialize<JsonDocument>(result.ToString(), _jsonOptions);
+    }
+
+    public string DiscoverSchemaName(string data)
+    {
+        var chatRequest = new ChatRequest(ModelTrainer.DiscoverSchemaName(data), _model);
+        var result = _openAiClient.ChatEndpoint.GetCompletionAsync(chatRequest).Result;
+        return result.FirstChoice.Message.ToString();
     }
 }

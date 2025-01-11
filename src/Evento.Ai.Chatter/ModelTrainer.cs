@@ -42,4 +42,17 @@ Assistant: {
             new(Role.User, data)
         };
     }
+
+    public static IEnumerable<OpenAI.Chat.Message> DiscoverSchemaName(string data)
+    {
+        return new List<OpenAI.Chat.Message>
+        {
+            new(Role.System, @"
+In the context of a distributed application where incoming messages need to be validated with a Json Schema, you are going to define the name of that schema related to a user story. Use words in lower case separated with a dash and be brief. Only return the name of the schema you think it's best.
+User: As a interested user I want to accept an invitation So I can join the company on the platform
+Assistant: accept-invitation
+"),
+            new(Role.User, data)
+        };
+    }
 }

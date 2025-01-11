@@ -1,8 +1,10 @@
-﻿namespace Evento.Ai.Processor.Domain.Aggregates.Entities;
+﻿using System.Text.Json;
+
+namespace Evento.Ai.Processor.Domain.Aggregates.Entities;
 
 public class Schema
 {
-    public Schema(string id, string contentType, string data, DateTime createdAt, string provider)
+    public Schema(string id, string contentType, JsonDocument data, DateTime createdAt, string provider)
     {
         Id = id;
         ContentType = contentType;
@@ -13,7 +15,7 @@ public class Schema
 
     public string Id { get; }
     public string ContentType { get; }
-    public string Data { get; }
+    public JsonDocument Data { get; }
     public DateTime CreatedAt { get; }
     public string Provider { get; }
 }

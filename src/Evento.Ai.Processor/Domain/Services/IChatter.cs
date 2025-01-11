@@ -1,6 +1,9 @@
-﻿namespace Evento.Ai.Processor.Domain.Services;
+﻿using System.Text.Json;
+
+namespace Evento.Ai.Processor.Domain.Services;
 
 public interface IChatter
 {
-    dynamic DiscoverSchema(string data);
+    JsonDocument DiscoverSchema(string data);
+    string DiscoverSchemaName(string data);
 }

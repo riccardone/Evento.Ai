@@ -39,8 +39,9 @@ public class Working : AggregateBase
         Ensure.NotNull(chatter, nameof(chatter));
 
         var schema = chatter.DiscoverSchema(command.Description);
-        if (!_validationSchemas.ContainsKey(schema.Id))
-            RaiseEvent(new ValidationSchemaGeneratedV1(schema.Id, schema.ContentType, schema.Data, nameof(chatter), command.Metadata));
+        var schemaName = chatter.DiscoverSchemaName(command.Description);
+        if (!_validationSchemas.ContainsKey(command.CorrelationId))
+            RaiseEvent(new ValidationSchemaGeneratedV1(schemaName, "application/json", schema, nameof(chatter), command.Metadata));
         if (_behaviour == null)
             RaiseEvent(new BehaviourRequestedV1(command.Area, command.Tag, command.Title, command.Description, command.AcceptanceCriterias, command.Metadata));
     }
