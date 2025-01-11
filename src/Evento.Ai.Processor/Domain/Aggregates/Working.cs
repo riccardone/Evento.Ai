@@ -42,6 +42,11 @@ public class Working : AggregateBase
         var schemaName = chatter.DiscoverSchemaName(command.Description);
         if (!_validationSchemas.ContainsKey(command.CorrelationId))
             RaiseEvent(new ValidationSchemaGeneratedV1(schemaName, "application/json", schema, nameof(chatter), command.Metadata));
+        // TODO generate command class
+        // TODO generate event class
+        // TODO generate mapper class
+        // TODO generate worker changes to handle the command 
+        // TODO generate command handling method
         if (_behaviour == null)
             RaiseEvent(new BehaviourRequestedV1(command.Area, command.Tag, command.Title, command.Description, command.AcceptanceCriterias, command.Metadata));
     }
