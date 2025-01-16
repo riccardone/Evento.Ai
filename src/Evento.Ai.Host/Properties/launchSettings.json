@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Evento.Ai": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"As a company admin I want to invite a colleague to signup on the platform So I can assign tasks\""
     },
     "Container (Dockerfile)": {
       "commandName": "Docker"

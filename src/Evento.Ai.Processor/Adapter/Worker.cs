@@ -155,7 +155,7 @@ public class Worker :
             aggregate = Domain.Aggregates.Working.Create();
         }
 
-        aggregate.RequestBehaviour(command, _dataReader, _chatter);
+        aggregate.RequestBehaviour(command, new ChatterService(_chatter));
 
         return aggregate;
     }

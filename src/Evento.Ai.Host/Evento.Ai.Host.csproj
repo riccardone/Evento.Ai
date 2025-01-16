@@ -26,4 +26,16 @@
     <ProjectReference Include="..\Evento.Ai.Processor\Evento.Ai.Processor.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="appsettings.dev.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="nlog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

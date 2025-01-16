@@ -1,6 +1,8 @@
 ﻿using Azure.Messaging.ServiceBus;
+using Evento.Ai.Chatter;
 using Evento.Ai.Processor;
 using Evento.Ai.Processor.Adapter;
+using Evento.Ai.Processor.Domain.Services;
 using EventStore.ClientAPI;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
+using OpenAI;
+using System.Text.Json;
 
 namespace Evento.Ai.Host;
 
@@ -18,7 +22,24 @@ internal class Program
         var logger = LogManager.GetCurrentClassLogger();
         try
         {
-            CreateHostBuilder(args).Build().Run();
+            if (args.Length == 0)
+                CreateHostBuilder(args).Build().Run();
+            else
+            {
+                logger.Info("Discovering validation schema...");
+                IConfiguration configuration = BuildConfig();
+                var settings = configuration.Get<Settings>();
+                var openAiClient = new OpenAIClient(new OpenAIAuthentication(settings.OpenAIApiKey, settings.OpenAIOrganization));
+                var chatter = new OpenAiChatter(openAiClient);
+                var chatterService = new ChatterService(chatter);
+                logger.Info($"Talking with AI about: {args[0]}");
+                var validationSchema = chatterService.GetValidationSchema(args[0]);
+                logger.Info("-------------------------");
+                logger.Info($"Schema Name: {validationSchema.Id}");
+                logger.Info("-------------------------");
+                logger.Info(PrettyPrintJsonDocument(validationSchema.Data));
+                logger.Info("-------------------------");
+            }
         }
         catch (Exception e)
         {
@@ -30,6 +51,15 @@ internal class Program
             // Ensure to flush and stop internal timers/threads before application-exit (Avoid segmentation fault on Linux)
             LogManager.Shutdown();
         }
+    }
+
+    private static string PrettyPrintJsonDocument(JsonDocument doc)
+    {
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true 
+        };
+        return JsonSerializer.Serialize(doc.RootElement, options);
     }
 
     public static IHostBuilder CreateHostBuilder(string[] args)

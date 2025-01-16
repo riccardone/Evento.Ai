@@ -31,17 +31,19 @@ public class Working : AggregateBase
         _behaviour = new Behaviour(evt.Area, evt.Tag, evt.Title, evt.Description, evt.AcceptanceCriterias);
     }
 
-    public void RequestBehaviour(RequestBehaviour command, IDataReader reader, IChatter chatter)
+    public void RequestBehaviour(RequestBehaviour command, ChatterService chatterService)
     {
         Ensure.NotNull(command, nameof(command));
         Ensure.NotNull(command.CorrelationId, nameof(command.CorrelationId));
-        Ensure.NotNull(reader, nameof(reader));
-        Ensure.NotNull(chatter, nameof(chatter));
+        Ensure.NotNull(chatterService, nameof(chatterService));
 
-        var schema = chatter.DiscoverSchema(command.Description);
-        var schemaName = chatter.DiscoverSchemaName(command.Description);
         if (!_validationSchemas.ContainsKey(command.CorrelationId))
-            RaiseEvent(new ValidationSchemaGeneratedV1(schemaName, "application/json", schema, nameof(chatter), command.Metadata));
+        {
+            var validationSchema = chatterService.GetValidationSchema(command.Description);
+            RaiseEvent(new ValidationSchemaGeneratedV1(validationSchema.Id, validationSchema.ContentType,
+                validationSchema.Data, validationSchema.Provider, command.Metadata));
+        }
+            
         // TODO generate command class
         // TODO generate event class
         // TODO generate mapper class
